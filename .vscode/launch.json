@@ -1,0 +1,54 @@
+{
+  // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+  // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+  // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Cargo launch",
+      "cargo": {
+        "args": ["build", "--lib"]
+      },
+      "args": []
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'rmodbus-tokio-poc'",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=rmodbus-tokio-poc",
+          "--package=rmodbus-tokio-poc"
+        ],
+        "filter": {
+          "name": "rmodbus-tokio-poc",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'rmodbus-tokio-poc'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=rmodbus-tokio-poc",
+          "--package=rmodbus-tokio-poc"
+        ],
+        "filter": {
+          "name": "rmodbus-tokio-poc",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
