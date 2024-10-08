@@ -11,9 +11,7 @@ impl ConfigArgs {
     // Метод возвращает путь к файлу конфигурации
     pub fn get_path_to_config(&self) -> PathBuf {
         match &self.config_path {
-            None => PathBuf::from(
-                "/home/Mikhail/projects/try_to_modbus/async-modbus-tcp-server/config.yaml",
-            ),
+            None => PathBuf::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/config.yaml"),
             Some(path) => path.to_owned(),
         }
     }
@@ -22,10 +20,10 @@ impl ConfigArgs {
         match &self.config_path {
             None => {
                 println!(
-                    "Путь к конфигурационному файлу не задан. Используется путь по умолчанию.\n"
+                    "\nПуть к конфигурационному файлу не задан. Используется путь по умолчанию."
                 )
             }
-            Some(path) => println!("Пусть к файлу с конфигом: {:?}\n", path),
+            Some(path) => println!("Путь к файлу с конфигом: {:?}\n", path),
         };
     }
 }

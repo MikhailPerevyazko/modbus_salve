@@ -59,7 +59,7 @@ pub fn transport_tcp() -> TransportTCP {
     let transport_tcp = TransportTCP {
         host_port: ip_addr,
         connected: false,
-        stream: None,
+        // stream: Some(TcpStream),
     };
     transport_tcp
 }

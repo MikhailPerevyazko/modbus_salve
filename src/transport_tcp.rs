@@ -1,9 +1,9 @@
 // use rmodbus::ModbusProto;
-use std::{error::Error, net::TcpStream};
+use std::net::TcpStream;
 
 pub trait TransportCommand {
     // fn modbus_proto(&self) -> ModbusProto;
-    fn connect(&mut self) -> Result<(), Box<dyn Error>>;
+    fn connect(&mut self) -> TcpStream;
     // fn disconnect(&mut self);
 }
 
@@ -11,7 +11,7 @@ pub trait TransportCommand {
 pub struct TransportTCP {
     pub host_port: String,
     pub connected: bool,
-    pub stream: Option<Box<TcpStream>>,
+    // pub stream: Option<TcpStream>,
 }
 
 impl TransportCommand for TransportTCP {
@@ -19,22 +19,18 @@ impl TransportCommand for TransportTCP {
     //     ModbusProto::TcpUdp
     // }
 
-    fn connect(&mut self) -> Result<(), Box<dyn Error>> {
+    fn connect(&mut self) -> TcpStream {
         if self.connected {
-            return Ok(());
+            todo!()
         } else {
             // Устанавливаем соединение
-            let stream = TcpStream::connect(&self.host_port)?;
-
-            self.stream = Some(Box::new(stream));
-            self.connected = true;
-            println!("Соединение с устройством {} установлено", self.host_port);
-            Ok(())
+            let stream = TcpStream::connect(&self.host_port).unwrap();
+            println!("Соединение с устройством {} установлено\n", self.host_port);
+            stream
         }
     }
     // fn disconnect(&mut self) {
     //     self.connected = false;
-    //     self.stream = None;
     //     println!("Соединение с устройством {} отключено", self.host_port);
     // }
 }
