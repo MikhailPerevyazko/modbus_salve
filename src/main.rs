@@ -1,4 +1,5 @@
 mod cmd;
+mod coils;
 mod config;
 mod transport_tcp;
 
@@ -10,14 +11,16 @@ use std::{
 use transport_tcp::TransportCommand;
 
 fn main() {
-    // Подключение по TCP
+    // Подключение по TCP и создание объекта запроса
     let mut stream = config::transport_tcp().connect();
-    // Создаем объект запроса
     let mut mreq = ModbusRequest::new(1, ModbusProto::TcpUdp);
-    get_coils_status(&mut stream, &mut mreq);
+    // set_coils(&mut stream, &mut mreq);
+    // parse_status_coils(&mut stream, &mut mreq);
+
+    coils::split_on_vecs();
 }
 
-pub fn get_coils_status(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
+pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
     // Создаем вектор запроса
     let mut request: Vec<u8> = Vec::new();
     // Установим значения для coil
@@ -51,7 +54,10 @@ pub fn get_coils_status(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
 
     // Проверяем на наличие ошибок modbus coils
     mreq.parse_ok(&response).unwrap();
+}
 
+pub fn parse_status_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
+    let mut request: Vec<u8> = Vec::new();
     // Получаем состояние койлов
     mreq.generate_get_coils(0, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
@@ -69,6 +75,7 @@ pub fn get_coils_status(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
         response.extend(tail);
     }
     println!("Ответ на состояние койлов: {:?}\n", response);
+    mreq.parse_ok(&response).unwrap();
 
     let mut data = Vec::new();
 
