@@ -18,7 +18,7 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
 
     println!("Запрос на запись койлов: {:?}", request);
 
-    // Записываем запрос в потко
+    // Записываем запрос в поток
     stream.write_all(&request).unwrap();
 
     // Получаем заголовок ответа из потока
