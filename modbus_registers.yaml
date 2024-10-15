@@ -2,10 +2,10 @@ coils:
   - parameters_name: "Temp"
     unit_id: 1
     start_address: 0
-    type_storage: 1
-    parameters_type: "first type"
+    type_storage: "DO"
+    parameters_type: "bool"
   - parameters_name: "Speed"
-    unit_id: 2
-    start_address: 0
-    type_storage: 1
-    parameters_type: "second type"
+    unit_id: 1
+    start_address: 8
+    type_storage: "AO"
+    parameters_type: "i32"
