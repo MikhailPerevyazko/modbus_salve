@@ -7,6 +7,7 @@ use std::{
 pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     // Создаем вектор запроса
     let mut request: Vec<u8> = Vec::new();
+
     // Установим значения для coil
     mreq.generate_set_coils_bulk(
         reg,
@@ -42,6 +43,7 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
 
 pub fn parse_status_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
+
     // Получаем состояние койлов
     mreq.generate_get_coils(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
@@ -52,6 +54,7 @@ pub fn parse_status_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg:
 
     let mut response = Vec::new();
     response.extend_from_slice(&buf);
+
     let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
     if head > 6 {
         let mut tail = vec![0u8; (head - 6) as usize];
