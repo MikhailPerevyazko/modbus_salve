@@ -1,15 +1,15 @@
 mod cmd;
 mod config;
+mod modbus;
 mod registers_map;
 mod transport_tcp;
 
 use rmodbus::{client::ModbusRequest, ModbusProto};
 use transport_tcp::TransportCommand;
-mod modbus;
 
 fn main() {
-    // Получаем карту регистров
-    let map_coils = registers_map::call_to_reg_map();
+    // Получаем карту регистров по имени "Temp"
+    let map_coils = registers_map::call_to_reg_map("Temp".to_string());
 
     // Подключение по TCP и создание объекта запроса
     let mut stream = config::transport_tcp().connect();
