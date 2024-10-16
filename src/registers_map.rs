@@ -16,7 +16,7 @@ impl YamlCoilsPath {
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct ModbusRegistersMap {
-    pub coils: Vec<Coils>,
+    pub channels: Vec<Coils>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -32,7 +32,7 @@ impl ModbusRegistersMap {
     // Получение вектора Coils по полю parametres name
     pub fn get_coil_by_name(&self, param_name: String) -> Option<&Coils> {
         let coils = self
-            .coils
+            .channels
             .iter()
             .find(|coil| coil.parameters_name == param_name);
         coils
@@ -43,6 +43,7 @@ pub fn call_to_reg_map(param_name: String) -> Coils {
     // Чтение карты регистров по заданному пути
     let path_to_coils_yaml: PathBuf =
         PathBuf::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_registers.yaml");
+
     let yaml_coils = YamlCoilsPath {
         file_path: path_to_coils_yaml,
     };
