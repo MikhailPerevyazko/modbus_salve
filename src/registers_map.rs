@@ -53,6 +53,5 @@ pub fn call_to_reg_map(param_name: String) -> Coils {
 
     // Находим по имени и записываем нужную нам карту
     let map = mb_regs_map.get_coil_by_name(param_name).unwrap().clone();
-
     map
 }
