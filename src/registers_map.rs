@@ -35,11 +35,11 @@ impl ModbusRegistersMap {
             .channels
             .iter()
             .find(|coil| coil.parameters_name == param_name);
-        coils
+        return coils;
     }
 }
 
-pub fn call_to_reg_map(param_name: String) -> Coils {
+pub fn call_to_reg_map(find_by_param_name: String) -> Coils {
     // Чтение карты регистров по заданному пути
     let path_to_coils_yaml: PathBuf =
         PathBuf::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_registers.yaml");
@@ -52,6 +52,10 @@ pub fn call_to_reg_map(param_name: String) -> Coils {
     let mb_regs_map = yaml_coils.load_from_yaml().unwrap();
 
     // Находим по имени и записываем нужную нам карту
-    let map = mb_regs_map.get_coil_by_name(param_name).unwrap().clone();
-    map
+    let map = mb_regs_map
+        .get_coil_by_name(find_by_param_name)
+        .unwrap()
+        .clone();
+
+    return map;
 }
