@@ -6,19 +6,16 @@ mod transport_tcp;
 
 use registers_map::Coils;
 use rmodbus::{client::ModbusRequest, ModbusProto};
+use serde::de::Error;
 use transport_tcp::TransportCommand;
-
-fn main() {
-    modbus_commands();
-}
 
 pub fn parse_type_storage(map: Coils) -> String {
     let type_storage = map.type_storage;
-    type_storage
+    return type_storage;
 }
 pub fn parse_parameters_type(map: Coils) -> String {
     let parameters_type = map.parameters_type;
-    parameters_type
+    return parameters_type;
 }
 
 pub fn modbus_commands() {
@@ -47,4 +44,8 @@ pub fn modbus_commands() {
     } else {
         println!("This type storage is wrong!")
     }
+}
+
+fn main() {
+    modbus_commands();
 }
