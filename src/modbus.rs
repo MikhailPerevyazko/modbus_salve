@@ -86,3 +86,34 @@ pub fn parse_status_coils(
         todo!()
     }
 }
+
+pub fn some_modbus_command(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
+    let mut request: Vec<u8> = Vec::new();
+
+    mreq.generate_set_holdings_bulk(0, &[1, 2, 3, 4], &mut request)
+        .unwrap();
+
+    println!("Запрос на запись холдингов: {:?}", request);
+
+    //? Записываем запрос в поток
+    stream.write_all(&request).unwrap();
+
+    //? Получаем заголовок ответа из потока
+    let mut buf = [0u8; 6];
+    stream.read_exact(&mut buf).unwrap();
+
+    let mut response = Vec::new();
+    response.extend_from_slice(&buf);
+
+    //? Читаем хвост ответа
+    let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
+    if head > 6 {
+        let mut tail = vec![0u8; (head - 6) as usize];
+        stream.read_exact(&mut tail).unwrap();
+        response.extend(tail);
+        println!("Ответ на запись холдингов: {:?}\n", response);
+    }
+
+    //? Проверяем на наличие ошибок modbus coils
+    mreq.parse_ok(&response).unwrap();
+}
