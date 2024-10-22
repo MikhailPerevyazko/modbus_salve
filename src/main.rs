@@ -23,7 +23,7 @@ pub fn parse_parameters_type(map: Coils) -> String {
 }
 
 pub fn modbus_commands() {
-    // Получаем карту регистров по имени "Voltage" и парсим type storage
+    // Получаем карту регистров по имени "Voltage" и парсим type storage, parameters_type
     let find_param_name = String::from("Voltage");
 
     let map_coils: Coils = registers_map::call_to_reg_map(find_param_name);
