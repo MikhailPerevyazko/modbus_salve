@@ -13,12 +13,12 @@ fn main() {
 }
 
 pub fn parse_type_storage(map: Coils) -> String {
-    let type_storage = map.type_storage;
+    let type_storage: String = map.type_storage;
     return type_storage;
 }
 
 pub fn parse_parameters_type(map: Coils) -> String {
-    let parameters_type = map.parameters_type;
+    let parameters_type: String = map.parameters_type;
     return parameters_type;
 }
 
@@ -26,14 +26,14 @@ pub fn modbus_commands() {
     // Получаем карту регистров по имени "Voltage" и парсим type storage
     let find_param_name = String::from("Voltage");
 
-    let map_coils = registers_map::call_to_reg_map(find_param_name);
+    let map_coils: Coils = registers_map::call_to_reg_map(find_param_name);
 
-    let type_store = parse_type_storage(map_coils.clone());
-    let param_type = parse_parameters_type(map_coils.clone());
+    let type_store: String = parse_type_storage(map_coils.clone());
+    let param_type: String = parse_parameters_type(map_coils.clone());
 
     //  Подключение по TCP и создание объекта запроса
-    let mut stream = config::transport_tcp().connect();
-    let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
+    let mut stream: std::net::TcpStream = config::transport_tcp().connect();
+    let mut mreq: ModbusRequest = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
 
     // Команды Modbus в зависиомости от type storage
     if type_store == "DO" {
