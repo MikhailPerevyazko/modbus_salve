@@ -24,7 +24,7 @@ pub fn parse_parameters_type(map: Coils) -> String {
 
 pub fn modbus_commands() {
     // Получаем карту регистров по имени "Voltage" и парсим type storage, parameters_type
-    let find_param_name = String::from("Voltage");
+    let find_param_name = String::from("Power");
 
     let map_coils = registers_map::call_to_reg_map(find_param_name);
 
@@ -48,7 +48,4 @@ pub fn modbus_commands() {
     } else {
         println!("This type storage is wrong!")
     }
-
-    let mut mreq_two = ModbusRequest::new(2, ModbusProto::TcpUdp);
-    modbus::some_modbus_command(&mut stream, &mut mreq_two);
 }
