@@ -37,6 +37,7 @@ pub fn modbus_commands() {
     if type_store == "DO" {
         modbus::set_coils(&mut stream, &mut mreq, map_coils.start_address);
         modbus::parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
+        modbus::set_coil();
     } else if type_store == "DI" {
         todo!()
     } else if type_store == "AI" {

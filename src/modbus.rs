@@ -9,14 +9,8 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
     //? Установим значения для coil
-    mreq.generate_set_coils_bulk(
-        reg,
-        &[
-            true, true, true, true, true, false, false, false, false, false,
-        ],
-        &mut request,
-    )
-    .unwrap();
+    mreq.generate_set_coils_bulk(reg, &[true, true, true, true, true], &mut request)
+        .unwrap();
 
     println!("Запрос на запись койлов: {request:?}");
 
@@ -87,4 +81,17 @@ pub fn parse_status_coils(
     } else if param_type == "f32" {
         todo!()
     }
+}
+
+pub fn set_coil() {
+    let mut stream = TcpStream::connect("127.0.0.1:5500").unwrap();
+    let mut mreq = ModbusRequest::new(1, ModbusProto::TcpUdp);
+    let mut request: Vec<u8> = Vec::new();
+
+    mreq.generate_set_coil(6, true, &mut request).unwrap();
+    stream.write_all(&request).unwrap();
+
+    println!("Запрос на запись одного койла: {:?}", request);
+
+    mreq.generate_set_holding(2, 2, &mut request).unwrap();
 }
