@@ -13,13 +13,11 @@ fn main() {
 }
 
 pub fn parse_type_storage(map: Coils) -> String {
-    let type_storage: String = map.type_storage;
-    return type_storage;
+    map.type_storage
 }
 
 pub fn parse_parameters_type(map: Coils) -> String {
-    let parameters_type: String = map.parameters_type;
-    return parameters_type;
+    map.parameters_type
 }
 
 pub fn modbus_commands() {
