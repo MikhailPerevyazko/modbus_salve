@@ -1,8 +1,19 @@
+use registers_map::Coils;
 use rmodbus::{client::ModbusRequest, guess_response_frame_len, ModbusProto};
 use std::{
     io::{Read, Write},
     net::TcpStream,
 };
+
+use crate::registers_map;
+
+pub fn parse_type_storage(map: Coils) -> String {
+    map.type_storage
+}
+
+pub fn parse_parameters_type(map: Coils) -> String {
+    map.parameters_type
+}
 
 pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     // Создаем вектор запроса
@@ -43,9 +54,9 @@ pub fn parse_status_coils(
     reg: u16,
     param_type: String,
 ) {
+    // Получаем (читаем) состояние койлов
     let mut request: Vec<u8> = Vec::new();
 
-    // Получаем состояние койлов
     mreq.generate_get_coils(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
     println!("Запрос на запись состояния койлов: {request:?}");
@@ -85,13 +96,11 @@ pub fn parse_status_coils(
 
 pub fn set_coil() {
     let mut stream = TcpStream::connect("127.0.0.1:5500").unwrap();
-    let mut mreq = ModbusRequest::new(1, ModbusProto::TcpUdp);
+    let mut mreq = ModbusRequest::new(2, ModbusProto::TcpUdp);
     let mut request: Vec<u8> = Vec::new();
 
     mreq.generate_set_coil(6, true, &mut request).unwrap();
     stream.write_all(&request).unwrap();
 
     println!("Запрос на запись одного койла: {:?}", request);
-
-    mreq.generate_set_holding(2, 2, &mut request).unwrap();
 }

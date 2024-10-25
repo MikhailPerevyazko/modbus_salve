@@ -4,20 +4,11 @@ mod modbus;
 mod registers_map;
 mod transport_tcp;
 
-use registers_map::Coils;
 use rmodbus::{client::ModbusRequest, ModbusProto};
 use transport_tcp::TransportCommand;
 
 fn main() {
     modbus_commands();
-}
-
-pub fn parse_type_storage(map: Coils) -> String {
-    map.type_storage
-}
-
-pub fn parse_parameters_type(map: Coils) -> String {
-    map.parameters_type
 }
 
 pub fn modbus_commands() {
@@ -26,8 +17,8 @@ pub fn modbus_commands() {
 
     let map_coils = registers_map::call_to_reg_map(find_param_name);
 
-    let type_store = parse_type_storage(map_coils.clone());
-    let param_type = parse_parameters_type(map_coils.clone());
+    let type_store = modbus::parse_type_storage(map_coils.clone());
+    let param_type = modbus::parse_parameters_type(map_coils.clone());
 
     //  Подключение по TCP и создание объекта запроса
     let mut stream = config::transport_tcp().connect();
