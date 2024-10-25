@@ -13,7 +13,7 @@ fn main() {
 
 pub fn modbus_commands() {
     // Получаем карту регистров по имени "Voltage" и парсим type storage, parameters_type
-    let find_param_name = String::from("Power");
+    let find_param_name = String::from("Set coils");
 
     let map_coils = registers_map::call_to_reg_map(find_param_name);
 
@@ -28,7 +28,6 @@ pub fn modbus_commands() {
     if type_store == "DO" {
         modbus::set_coils(&mut stream, &mut mreq, map_coils.start_address);
         modbus::parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
-        modbus::set_coil();
     } else if type_store == "DI" {
         todo!()
     } else if type_store == "AI" {
@@ -38,4 +37,9 @@ pub fn modbus_commands() {
     } else {
         println!("This type storage is wrong!")
     }
+    // Запрос на запись одного койла
+    let map_coil = registers_map::call_to_reg_map("Set coil".to_string());
+    let mut mreq_coil = ModbusRequest::new(map_coil.unit_id, ModbusProto::TcpUdp);
+
+    modbus::set_coil(&mut stream, &mut mreq_coil, map_coil.start_address);
 }

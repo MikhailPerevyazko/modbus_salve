@@ -94,12 +94,10 @@ pub fn parse_status_coils(
     }
 }
 
-pub fn set_coil() {
-    let mut stream = TcpStream::connect("127.0.0.1:5500").unwrap();
-    let mut mreq = ModbusRequest::new(2, ModbusProto::TcpUdp);
+pub fn set_coil(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
-    mreq.generate_set_coil(6, true, &mut request).unwrap();
+    mreq.generate_set_coil(reg, true, &mut request).unwrap();
     stream.write_all(&request).unwrap();
 
     println!("Запрос на запись одного койла: {:?}", request);

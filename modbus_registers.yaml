@@ -1,10 +1,10 @@
 channels:
-  - parameters_name: "Voltage"
+  - parameters_name: "Set coil"
     unit_id: 1
-    start_address: 0
+    start_address: 6
     type_storage: "DO"
     parameters_type: "bool"
-  - parameters_name: "Power"
+  - parameters_name: "Set coils"
     unit_id: 1
     start_address: 0
     type_storage: "DO"
