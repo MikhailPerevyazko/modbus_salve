@@ -121,7 +121,7 @@ pub fn parse_status_coils(
 pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
-    mreq.generate_set_holdings_bulk(reg, &[1, 1, 1, 1], &mut request)
+    mreq.generate_set_holdings_bulk(reg, &[3, 2, 1, 1], &mut request)
         .unwrap();
     println!("\nЗапрос на запись холдингов: {:?}", request);
 

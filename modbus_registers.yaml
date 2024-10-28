@@ -13,6 +13,6 @@ channels:
 
   - parameters_name: "Set holdings"
     unit_id: 2
-    start_address: 0
+    start_address: 3
     type_storage: "AO"
     parameters_type: "i32"
