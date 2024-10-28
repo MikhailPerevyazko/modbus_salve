@@ -4,24 +4,30 @@ mod modbus;
 mod registers_map;
 mod transport_tcp;
 
+use std::net::TcpStream;
+
 use rmodbus::{client::ModbusRequest, ModbusProto};
 use transport_tcp::TransportCommand;
 
 fn main() {
-    modbus_commands();
+    // Подключение по TCP
+    let stream = config::transport_tcp().connect();
+    // Получаем карту регистров по имени "Voltage" и парсим type storage, parameters_type
+    let find_param_name_one = String::from("Set coils");
+    modbus_commands(find_param_name_one, stream);
+
+    let stream_two = config::transport_tcp().connect();
+    let find_param_name_two = String::from("Set holdings");
+    modbus_commands(find_param_name_two, stream_two);
 }
 
-pub fn modbus_commands() {
-    // Получаем карту регистров по имени "Voltage" и парсим type storage, parameters_type
-    let find_param_name = String::from("Set coils");
-
+pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
     let map_coils = registers_map::call_to_reg_map(find_param_name);
 
     let type_store = modbus::parse_type_storage(map_coils.clone());
     let param_type = modbus::parse_parameters_type(map_coils.clone());
 
-    //  Подключение по TCP и создание объекта запроса
-    let mut stream = config::transport_tcp().connect();
+    //  Создание объекта запроса
     let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
 
     // Команды Modbus в зависиомости от type storage
@@ -33,7 +39,7 @@ pub fn modbus_commands() {
     } else if type_store == "AI" {
         todo!()
     } else if type_store == "AO" {
-        todo!()
+        modbus::set_hoildings(&mut stream, &mut mreq, map_coils.start_address);
     } else {
         println!("This type storage is wrong!")
     }

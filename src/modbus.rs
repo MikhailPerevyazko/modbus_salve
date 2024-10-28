@@ -93,3 +93,27 @@ pub fn parse_status_coils(
         todo!()
     }
 }
+
+pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+    let mut request: Vec<u8> = Vec::new();
+
+    mreq.generate_set_holdings_bulk(reg, &[1, 1, 1, 1], &mut request)
+        .unwrap();
+    println!("\nЗапрос на запись холдингов: {:?}", request);
+
+    stream.write_all(&request).unwrap();
+
+    let mut buf = [0u8; 6];
+    stream.read_exact(&mut buf).unwrap();
+
+    let mut response: Vec<u8> = Vec::new();
+    response.extend_from_slice(&buf);
+
+    let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
+    if head > 6 {
+        let mut tail = vec![0u8; (head - 6) as usize];
+        stream.read_exact(&mut tail).unwrap();
+        response.extend(tail);
+        println!("Ответ на запись холдингов: {response:?}\n");
+    }
+}
