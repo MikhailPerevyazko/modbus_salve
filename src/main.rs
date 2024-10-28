@@ -37,9 +37,4 @@ pub fn modbus_commands() {
     } else {
         println!("This type storage is wrong!")
     }
-    // Запрос на запись одного койла
-    let map_coil = registers_map::call_to_reg_map("Set coil".to_string());
-    let mut mreq_coil = ModbusRequest::new(map_coil.unit_id, ModbusProto::TcpUdp);
-
-    modbus::set_coil(&mut stream, &mut mreq_coil, map_coil.start_address);
 }

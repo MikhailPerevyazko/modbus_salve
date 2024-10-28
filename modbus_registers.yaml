@@ -1,9 +1,10 @@
 channels:
   - parameters_name: "Set coil"
     unit_id: 1
-    start_address: 6
+    start_address: 9
     type_storage: "DO"
     parameters_type: "bool"
+
   - parameters_name: "Set coils"
     unit_id: 1
     start_address: 0

@@ -93,12 +93,3 @@ pub fn parse_status_coils(
         todo!()
     }
 }
-
-pub fn set_coil(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
-    let mut request: Vec<u8> = Vec::new();
-
-    mreq.generate_set_coil(reg, true, &mut request).unwrap();
-    stream.write_all(&request).unwrap();
-
-    println!("Запрос на запись одного койла: {:?}", request);
-}
