@@ -7,6 +7,30 @@ use std::{
 
 use crate::registers_map;
 
+pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
+    let map_coils = registers_map::call_to_reg_map(find_param_name);
+
+    let type_store = parse_type_storage(map_coils.clone());
+    let param_type = parse_parameters_type(map_coils.clone());
+
+    //  Создание объекта запроса
+    let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
+
+    // Команды Modbus в зависиомости от type storage
+    if type_store == "DO" {
+        set_coils(&mut stream, &mut mreq, map_coils.start_address);
+        parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
+    } else if type_store == "DI" {
+        todo!()
+    } else if type_store == "AI" {
+        todo!()
+    } else if type_store == "AO" {
+        set_hoildings(&mut stream, &mut mreq, map_coils.start_address);
+    } else {
+        println!("This type storage is wrong!")
+    }
+}
+
 pub fn parse_type_storage(map: Coils) -> String {
     map.type_storage
 }
