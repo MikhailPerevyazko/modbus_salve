@@ -10,13 +10,12 @@ use crate::registers_map;
 pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
     let map_coils = registers_map::call_to_reg_map(find_param_name);
 
-    let type_store = parse_type_storage(map_coils.clone());
-    let param_type = parse_parameters_type(map_coils.clone());
-
     //  Создание объекта запроса
     let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
 
     // Команды Modbus в зависиомости от type storage
+    let type_store = parse_type_storage(map_coils.clone());
+    let param_type = parse_parameters_type(map_coils.clone());
     if type_store == "DO" {
         set_coils(&mut stream, &mut mreq, map_coils.start_address);
         parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
@@ -26,6 +25,8 @@ pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
         todo!()
     } else if type_store == "AO" {
         set_hoildings(&mut stream, &mut mreq, map_coils.start_address);
+        // set_hoildings_string(&mut stream, &mut mreq);
+        parse_status_holdings(&mut stream, &mut mreq, map_coils.start_address);
     } else {
         println!("This type storage is wrong!")
     }
@@ -43,11 +44,11 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     // Создаем вектор запроса
     let mut request: Vec<u8> = Vec::new();
 
-    //? Установим значения для coil
+    // Установим значения для coil
     mreq.generate_set_coils_bulk(reg, &[true, true, true, true, true], &mut request)
         .unwrap();
 
-    println!("Запрос на запись койлов: {request:?}");
+    println!("Запрос на запись койлов: {:?}", request);
 
     // Записываем запрос в поток
     stream.write_all(&request).unwrap();
@@ -65,7 +66,7 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
         let mut tail = vec![0u8; (head - 6) as usize];
         stream.read_exact(&mut tail).unwrap();
         response.extend(tail);
-        println!("Ответ на запись койлов: {response:?}\n");
+        println!("Ответ на запись койлов: {:?}\n", response);
     }
 
     // Проверяем на наличие ошибок modbus coils
@@ -83,7 +84,7 @@ pub fn parse_status_coils(
 
     mreq.generate_get_coils(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
-    println!("Запрос на запись состояния койлов: {request:?}");
+    println!("Запрос на запись состояния койлов: {:?}", request);
 
     let mut buf = [0u8; 6];
     stream.read_exact(&mut buf).unwrap();
@@ -99,7 +100,7 @@ pub fn parse_status_coils(
         response.extend(tail);
     }
 
-    println!("Ответ на состояние койлов: {response:?}\n");
+    println!("Ответ на состояние койлов: {:?}\n", response);
     mreq.parse_ok(&response).unwrap();
 
     // В зависимости от parameters_type в yaml парсим состояние регистров
@@ -109,7 +110,7 @@ pub fn parse_status_coils(
         // Парсим состояние койлов
         mreq.parse_bool(&response, &mut data).unwrap();
         for (i, c) in data.iter().enumerate() {
-            println!("Coil #{i:?} - {c:?}");
+            println!("Coil #{:?} - {:?}", i, c);
         }
     } else if param_type == "i32" {
         todo!()
@@ -121,9 +122,9 @@ pub fn parse_status_coils(
 pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
-    mreq.generate_set_holdings_bulk(reg, &[3, 2, 1, 1], &mut request)
+    mreq.generate_set_holdings_bulk(reg, &[5], &mut request)
         .unwrap();
-    println!("\nЗапрос на запись холдингов: {:?}", request);
+    println!("Запрос на запись холдингов: {:?}", request);
 
     stream.write_all(&request).unwrap();
 
@@ -138,6 +139,39 @@ pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
         let mut tail = vec![0u8; (head - 6) as usize];
         stream.read_exact(&mut tail).unwrap();
         response.extend(tail);
-        println!("Ответ на запись холдингов: {response:?}\n");
+        println!("Ответ на запись холдингов: {:?}\n", response);
     }
 }
+
+pub fn parse_status_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+    // Получаем (читаем) состояние койлов и выводим запрос на чтение состояния
+    let mut request: Vec<u8> = Vec::new();
+    mreq.generate_get_holdings(reg, 10, &mut request).unwrap();
+    stream.write_all(&request).unwrap();
+    println!("Запрос на запись состояния холдингов: {:?}", request);
+
+    let mut buf = [0u8; 6];
+    stream.read_exact(&mut buf).unwrap();
+
+    let mut response = Vec::new();
+    response.extend_from_slice(&buf);
+
+    let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
+    if head > 6 {
+        let mut tail = vec![0u8; (head - 6) as usize];
+        stream.read_exact(&mut tail).unwrap();
+        response.extend(tail);
+    }
+
+    println!("Ответ на состояние холдингов: {:?}\n", response);
+}
+
+// pub fn set_hoildings_string(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
+//     let mut request: Vec<u8> = Vec::new();
+
+//     let values: &str = "a b c d e";
+//     mreq.generate_set_holdings_string(0, values, &mut request)
+//         .unwrap();
+
+//     stream.write_all(&request).unwrap();
+// }
