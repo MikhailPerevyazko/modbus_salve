@@ -4,7 +4,7 @@ pub trait TransportCommand {
     fn connect(&mut self) -> TcpStream;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TransportTCP {
     pub host_port: String,
     pub connected: bool,

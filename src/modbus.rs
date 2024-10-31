@@ -9,13 +9,12 @@ use crate::registers_map;
 
 pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
     let map_coils = registers_map::call_to_reg_map(find_param_name);
-
     //  Создание объекта запроса
     let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
-
     // Команды Modbus в зависиомости от type storage
     let type_store = parse_type_storage(map_coils.clone());
     let param_type = parse_parameters_type(map_coils.clone());
+
     if type_store == "DO" {
         set_coils(&mut stream, &mut mreq, map_coils.start_address);
         parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
@@ -25,7 +24,6 @@ pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
         todo!()
     } else if type_store == "AO" {
         set_hoildings(&mut stream, &mut mreq, map_coils.start_address);
-        // set_hoildings_string(&mut stream, &mut mreq);
         parse_status_holdings(&mut stream, &mut mreq, map_coils.start_address);
     } else {
         println!("This type storage is wrong!")
@@ -122,7 +120,7 @@ pub fn parse_status_coils(
 pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
-    mreq.generate_set_holdings_bulk(reg, &[5], &mut request)
+    mreq.generate_set_holdings_bulk(reg, &[5, 4], &mut request)
         .unwrap();
     println!("Запрос на запись холдингов: {:?}", request);
 
@@ -148,6 +146,7 @@ pub fn parse_status_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, r
     let mut request: Vec<u8> = Vec::new();
     mreq.generate_get_holdings(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
+
     println!("Запрос на запись состояния холдингов: {:?}", request);
 
     let mut buf = [0u8; 6];
@@ -165,13 +164,3 @@ pub fn parse_status_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, r
 
     println!("Ответ на состояние холдингов: {:?}\n", response);
 }
-
-// pub fn set_hoildings_string(stream: &mut TcpStream, mreq: &mut ModbusRequest) {
-//     let mut request: Vec<u8> = Vec::new();
-
-//     let values: &str = "a b c d e";
-//     mreq.generate_set_holdings_string(0, values, &mut request)
-//         .unwrap();
-
-//     stream.write_all(&request).unwrap();
-// }

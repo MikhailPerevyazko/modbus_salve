@@ -35,7 +35,8 @@ impl ModbusRegistersMap {
             .channels
             .iter()
             .find(|coil| coil.parameters_name == param_name);
-        return coils;
+
+        coils
     }
 }
 
@@ -57,5 +58,5 @@ pub fn call_to_reg_map(find_by_param_name: String) -> Coils {
         .unwrap()
         .clone();
 
-    return map;
+    map
 }

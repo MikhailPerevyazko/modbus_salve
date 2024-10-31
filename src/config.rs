@@ -4,13 +4,13 @@ use serde::Deserialize;
 use std::{error::Error, fs, path::PathBuf};
 
 // Структура содержимого файла конфигурации
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct TransportConfig {
     pub host: String,
     pub port: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Configuration {
     pub transport: Vec<TransportConfig>,
 }
@@ -30,7 +30,8 @@ pub fn to_tcp_address(config_content: Configuration) -> String {
         let port = transport.port;
         tcp_address = format!("{}:{}", host, port);
     }
-    return tcp_address;
+
+    tcp_address
 }
 
 //? Чтение и запись конфиг файла
@@ -44,13 +45,15 @@ pub fn read_config_file() -> Configuration {
 
     // Получаем содержимое конфигурационного файла
     let config_content = load_config(path_to_config_file).unwrap();
-    return config_content;
+
+    config_content
 }
 
 //? Получаем ip адрес
 pub fn get_id_addr() -> String {
     let config = read_config_file();
     let id_address = to_tcp_address(config);
+
     id_address
 }
 
@@ -59,7 +62,7 @@ pub fn transport_tcp() -> TransportTCP {
     let transport_tcp = TransportTCP {
         host_port: ip_addr,
         connected: false,
-        // stream: Some(TcpStream),
     };
+
     transport_tcp
 }
