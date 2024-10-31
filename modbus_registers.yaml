@@ -1,12 +1,12 @@
 channels:
   - parameters_name: "Set coils"
-    unit_id: 1
+    unit_id: 123
     start_address: 0
     type_storage: "DO"
     parameters_type: "bool"
 
   - parameters_name: "Set holdings"
-    unit_id: 2
+    unit_id: 125
     start_address: 0
     type_storage: "AO"
     parameters_type: "i32"
