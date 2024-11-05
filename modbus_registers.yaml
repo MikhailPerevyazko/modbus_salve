@@ -5,8 +5,20 @@ channels:
     type_storage: "DO"
     parameters_type: "bool"
 
-  - parameters_name: "Set holdings"
+  - parameters_name: "Get inputs"
     unit_id: 125
+    start_address: 0
+    type_storage: "DI"
+    parameters_type: "bool"
+
+  - parameters_name: "Set holdings"
+    unit_id: 127
     start_address: 0
     type_storage: "AO"
     parameters_type: "i32"
+
+  - parameters_name: "Get discrets"
+    unit_id: 129
+    start_address: 0
+    type_storage: "AI"
+    parameters_type: "bool"
