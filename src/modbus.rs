@@ -1,4 +1,3 @@
-use registers_map::Coils;
 use rmodbus::{client::ModbusRequest, guess_response_frame_len, ModbusProto};
 use std::{
     io::{Read, Write},
@@ -8,34 +7,29 @@ use std::{
 use crate::registers_map;
 
 pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
-    let map_coils = registers_map::call_to_reg_map(find_param_name);
+    let map = registers_map::call_to_reg_map(find_param_name);
     //  Создание объекта запросаs
-    let mut mreq = ModbusRequest::new(map_coils.unit_id, ModbusProto::TcpUdp);
-    // Команды Modbus в зависиомости от type storage
-    let type_store = parse_type_storage(map_coils.clone());
-    let param_type = parse_parameters_type(map_coils.clone());
+    let mut mreq = ModbusRequest::new(map.unit_id, ModbusProto::TcpUdp);
 
-    if type_store == "DO" {
-        set_coils(&mut stream, &mut mreq, map_coils.start_address);
-        parse_status_coils(&mut stream, &mut mreq, map_coils.start_address, param_type);
-    } else if type_store == "DI" {
-        get_inputs_status(&mut stream, &mut mreq, map_coils.start_address);
-    } else if type_store == "AI" {
-        get_discretes(&mut stream, &mut mreq, map_coils.start_address);
-    } else if type_store == "AO" {
-        set_hoildings(&mut stream, &mut mreq, map_coils.start_address);
-        parse_status_holdings(&mut stream, &mut mreq, map_coils.start_address);
+    let type_storage = map.type_storage;
+    if type_storage == "DO" {
+        set_coils(&mut stream, &mut mreq, map.start_address);
+        parse_status_coils(
+            &mut stream,
+            &mut mreq,
+            map.start_address,
+            map.parameters_type,
+        );
+    } else if type_storage == "DI" {
+        get_inputs_status(&mut stream, &mut mreq, map.start_address);
+    } else if type_storage == "AI" {
+        get_discretes(&mut stream, &mut mreq, map.start_address);
+    } else if type_storage == "AO" {
+        set_hoildings(&mut stream, &mut mreq, map.start_address);
+        parse_status_holdings(&mut stream, &mut mreq, map.start_address);
     } else {
         println!("This type storage is wrong!")
     }
-}
-
-pub fn parse_type_storage(map: Coils) -> String {
-    map.type_storage
-}
-
-pub fn parse_parameters_type(map: Coils) -> String {
-    map.parameters_type
 }
 
 pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
@@ -218,9 +212,9 @@ pub fn get_discretes(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
     println!("Ответ на состояние дискретных входов: {:?}\n", response);
 
     mreq.parse_ok(&response).unwrap();
-
     let mut result: Vec<u16> = Vec::new();
     mreq.parse_u16(&response, &mut result).unwrap();
+
     for (num, value) in result.iter().enumerate() {
         println!("Discrets #{:?} - {:?}", num, value)
     }

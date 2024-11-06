@@ -21,4 +21,4 @@ channels:
     unit_id: 129
     start_address: 0
     type_storage: "AI"
-    parameters_type: "bool"
+    parameters_type: "i32"
