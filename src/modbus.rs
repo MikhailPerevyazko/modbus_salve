@@ -100,11 +100,11 @@ pub fn parse_status_coils(
     mreq.parse_ok(&response).unwrap();
 
     // В зависимости от parameters_type в yaml парсим состояние регистров
-    let mut data = Vec::new();
+    let mut result = Vec::new();
     if param_type == "bool" {
         // Парсим состояние койлов
-        mreq.parse_bool(&response, &mut data).unwrap();
-        for (i, c) in data.iter().enumerate() {
+        mreq.parse_bool(&response, &mut result).unwrap();
+        for (i, c) in result.iter().enumerate() {
             println!("Coil #{:?} - {:?}", i, c);
         }
     } else if param_type == "i32" {
@@ -208,14 +208,14 @@ pub fn get_discretes(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
         stream.read_exact(&mut tail).unwrap();
         response.extend(tail)
     }
-
     println!("Ответ на состояние дискретных входов: {:?}\n", response);
 
     mreq.parse_ok(&response).unwrap();
-    let mut result: Vec<u16> = Vec::new();
+
+    let mut result = Vec::new();
     mreq.parse_u16(&response, &mut result).unwrap();
 
     for (num, value) in result.iter().enumerate() {
-        println!("Discrets #{:?} - {:?}", num, value)
+        println!("Discret #{:?} - {:?}", num, value)
     }
 }

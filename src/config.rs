@@ -39,10 +39,8 @@ pub fn read_config_file() -> Configuration {
     // Получаем путь к файлу конфигурации
     let config_args = ConfigArgs { config_path: None };
     let path_to_config_file = config_args.get_path_to_config();
-
     // Проверка в терминале наличия пути к конфигурационному файлу
     config_args.check_path_to_config();
-
     // Получаем содержимое конфигурационного файла
     let config_content = load_config(path_to_config_file).unwrap();
 
