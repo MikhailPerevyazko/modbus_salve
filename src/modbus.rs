@@ -109,6 +109,34 @@ pub fn read_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16, pa
     }
 }
 
+pub fn read_input_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+    let mut request: Vec<u8> = Vec::new();
+    mreq.generate_get_inputs(reg, 10, &mut request).unwrap();
+    stream.write_all(&request).unwrap();
+    println!("Запрос на чтение статуса входных инпутов: {:?}", request);
+
+    let mut buf = [0u8; 6];
+    stream.read_exact(&mut buf).unwrap();
+
+    let mut response = Vec::new();
+    response.extend_from_slice(&buf);
+
+    let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
+    if head > 6 {
+        let mut tail = vec![0u8; (head - 6) as usize];
+        stream.read_exact(&mut tail).unwrap();
+        response.extend(tail)
+    }
+
+    println!("Ответ на состояние входных инпутов: {:?}\n", response);
+
+    let mut result = Vec::new();
+    mreq.parse_bool(&response, &mut result).unwrap();
+    for (num, value) in result.iter().enumerate() {
+        println!("Input status #{:?} - {:?}", num, value)
+    }
+}
+
 pub fn write_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
@@ -160,34 +188,6 @@ pub fn read_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
     mreq.parse_u16(&response, &mut result).unwrap();
     for (num, value) in result.iter().enumerate() {
         println!("Holding #{:?} - {:?}", num, value)
-    }
-}
-
-pub fn read_input_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
-    let mut request: Vec<u8> = Vec::new();
-    mreq.generate_get_inputs(reg, 10, &mut request).unwrap();
-    stream.write_all(&request).unwrap();
-    println!("Запрос на чтение статуса входных инпутов: {:?}", request);
-
-    let mut buf = [0u8; 6];
-    stream.read_exact(&mut buf).unwrap();
-
-    let mut response = Vec::new();
-    response.extend_from_slice(&buf);
-
-    let head = guess_response_frame_len(&buf, ModbusProto::TcpUdp).unwrap();
-    if head > 6 {
-        let mut tail = vec![0u8; (head - 6) as usize];
-        stream.read_exact(&mut tail).unwrap();
-        response.extend(tail)
-    }
-
-    println!("Ответ на состояние входных инпутов: {:?}\n", response);
-
-    let mut result: Vec<bool> = Vec::new();
-    mreq.parse_bool(&response, &mut result).unwrap();
-    for (num, value) in result.iter().enumerate() {
-        println!("Input status #{:?} - {:?}", num, value)
     }
 }
 
