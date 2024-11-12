@@ -8,31 +8,31 @@ use crate::registers_map;
 
 pub fn modbus_commands(find_param_name: String, mut stream: TcpStream) {
     let map = registers_map::call_to_reg_map(find_param_name);
-    //  Создание объекта запросаs
     let mut mreq = ModbusRequest::new(map.unit_id, ModbusProto::TcpUdp);
 
     let type_storage = map.type_storage;
+
     if type_storage == "DO" {
-        set_coils(&mut stream, &mut mreq, map.start_address);
-        parse_status_coils(
+        write_coils(&mut stream, &mut mreq, map.start_address);
+        read_coils(
             &mut stream,
             &mut mreq,
             map.start_address,
             map.parameters_type,
         );
     } else if type_storage == "DI" {
-        get_inputs_status(&mut stream, &mut mreq, map.start_address);
-    } else if type_storage == "AI" {
-        get_discretes(&mut stream, &mut mreq, map.start_address);
+        read_input_status(&mut stream, &mut mreq, map.start_address);
     } else if type_storage == "AO" {
-        set_hoildings(&mut stream, &mut mreq, map.start_address);
-        parse_status_holdings(&mut stream, &mut mreq, map.start_address);
+        write_hoildings(&mut stream, &mut mreq, map.start_address);
+        read_holdings(&mut stream, &mut mreq, map.start_address);
+    } else if type_storage == "AI" {
+        read_input_registers(&mut stream, &mut mreq, map.start_address);
     } else {
-        println!("This type storage is wrong!")
+        println!("Error!")
     }
 }
 
-pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+pub fn write_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     // Создаем вектор запроса
     let mut request: Vec<u8> = Vec::new();
 
@@ -69,12 +69,7 @@ pub fn set_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     mreq.parse_ok(&response).unwrap();
 }
 
-pub fn parse_status_coils(
-    stream: &mut TcpStream,
-    mreq: &mut ModbusRequest,
-    reg: u16,
-    param_type: String,
-) {
+pub fn read_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16, param_type: String) {
     // Получаем (читаем) состояние койлов
     let mut request: Vec<u8> = Vec::new();
 
@@ -114,7 +109,7 @@ pub fn parse_status_coils(
     }
 }
 
-pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+pub fn write_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
 
     mreq.generate_set_holdings_bulk(reg, &[10, 10, 10, 10, 10, 10, 10, 10, 10, 10], &mut request)
@@ -138,7 +133,7 @@ pub fn set_hoildings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
     }
 }
 
-pub fn parse_status_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+pub fn read_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     // Запрос на состояние холдингов
     let mut request: Vec<u8> = Vec::new();
     mreq.generate_get_holdings(reg, 10, &mut request).unwrap();
@@ -168,11 +163,11 @@ pub fn parse_status_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, r
     }
 }
 
-pub fn get_inputs_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+pub fn read_input_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
     mreq.generate_get_inputs(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
-    println!("Запрос на чтение статуса инпутов: {:?}", request);
+    println!("Запрос на чтение статуса входных инпутов: {:?}", request);
 
     let mut buf = [0u8; 6];
     stream.read_exact(&mut buf).unwrap();
@@ -187,14 +182,20 @@ pub fn get_inputs_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: 
         response.extend(tail)
     }
 
-    println!("Ответ на состояние инпутов: {:?}\n", response);
+    println!("Ответ на состояние входных инпутов: {:?}\n", response);
+
+    let mut result: Vec<bool> = Vec::new();
+    mreq.parse_bool(&response, &mut result).unwrap();
+    for (num, value) in result.iter().enumerate() {
+        println!("Input status #{:?} - {:?}", num, value)
+    }
 }
 
-pub fn get_discretes(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
+pub fn read_input_registers(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
     mreq.generate_get_discretes(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
-    println!("Запрос на чтение дисркетных входов: {:?}", request);
+    println!("Запрос на чтение регистров входа: {:?}", request);
 
     let mut buf = [0u8; 6];
     stream.read_exact(&mut buf).unwrap();
@@ -208,14 +209,11 @@ pub fn get_discretes(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
         stream.read_exact(&mut tail).unwrap();
         response.extend(tail)
     }
-    println!("Ответ на состояние дискретных входов: {:?}\n", response);
-
-    mreq.parse_ok(&response).unwrap();
+    println!("Ответ на состояние регистров входа: {:?}\n", response);
 
     let mut result = Vec::new();
     mreq.parse_u16(&response, &mut result).unwrap();
-
     for (num, value) in result.iter().enumerate() {
-        println!("Discret #{:?} - {:?}", num, value)
+        println!("Input register #{:?} - {:?}", num, value)
     }
 }

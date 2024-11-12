@@ -17,7 +17,7 @@ channels:
     type_storage: "AO"
     parameters_type: "i32"
 
-  - parameters_name: "Get discrets"
+  - parameters_name: "Get registers"
     unit_id: 129
     start_address: 0
     type_storage: "AI"
