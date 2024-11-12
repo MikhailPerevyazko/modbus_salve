@@ -1,23 +1,23 @@
 channels:
-  - parameters_name: "Set coils"
+  - parameters_name: "Write coils"
     unit_id: 123
     start_address: 0
     type_storage: "DO"
     parameters_type: "bool"
 
-  - parameters_name: "Get inputs"
+  - parameters_name: "Read inputs"
     unit_id: 125
     start_address: 0
     type_storage: "DI"
     parameters_type: "bool"
 
-  - parameters_name: "Set holdings"
+  - parameters_name: "Write holdings"
     unit_id: 127
     start_address: 0
     type_storage: "AO"
     parameters_type: "i32"
 
-  - parameters_name: "Get registers"
+  - parameters_name: "Read registers"
     unit_id: 129
     start_address: 0
     type_storage: "AI"
