@@ -111,7 +111,7 @@ pub fn read_coils(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16, pa
 
 pub fn read_input_status(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
     let mut request: Vec<u8> = Vec::new();
-    mreq.generate_get_inputs(reg, 10, &mut request).unwrap();
+    mreq.generate_get_discretes(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
     println!("Запрос на чтение статуса входных инпутов: {:?}", request);
 
@@ -192,8 +192,8 @@ pub fn read_holdings(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16)
 }
 
 pub fn read_input_registers(stream: &mut TcpStream, mreq: &mut ModbusRequest, reg: u16) {
-    let mut request: Vec<u8> = Vec::new();
-    mreq.generate_get_discretes(reg, 10, &mut request).unwrap();
+    let mut request = Vec::new();
+    mreq.generate_get_inputs(reg, 10, &mut request).unwrap();
     stream.write_all(&request).unwrap();
     println!("Запрос на чтение регистров входа: {:?}", request);
 
