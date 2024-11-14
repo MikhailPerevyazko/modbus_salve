@@ -1,0 +1,25 @@
+connection_configs:
+  - protocol_type: "tcp"
+    connection:
+      host: "127.0.0.1"
+      port: "5500"
+  - protocol_type: "udp"
+    connection:
+      host: "127.0.0.1"
+      port: "5001"
+      listen_host: "127.0.0.1"
+      listen_port: "5002"
+  - protocol_type: "rtu"
+    connection:
+      name: "/dev/ttyUSB1"
+      baud_rate: 115200
+      data_bits: 8
+      flow_control: "none"
+      parity: "none"
+      stop_bits: 1
+parameters:
+  - name: "coils"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 0
+    mstorage: "DI"
