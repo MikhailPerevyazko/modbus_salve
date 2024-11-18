@@ -1,39 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-// Структура для TCP соединения
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct TcpConnection {
-    pub host: String,
-    pub port: String,
-}
-// Структура для UDP соединения
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct UdpConnection {
-    pub host: String,
-    pub port: String,
-    pub listen_host: String,
-    pub listen_port: String,
-}
-// Структура для RTU соединения
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct RtuConnection {
-    pub name: String,
-    pub baud_rate: i32,
-    pub data_bits: i32,
-    pub flow_control: Option<String>,
-    pub parity: Option<String>,
-    pub stop_bits: i32,
-}
-
-// #[derive(Debug, Serialize, Deserialize, Clone)]
-// // #[serde(tag = "protocol_type", rename_all = "lowercase")]
-// pub enum Connection {
-//     Tcp(TcpConnection),
-//     Udp(UdpConnection),
-//     Rtu(RtuConnection),
-// }
-
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Connection {
     pub host: Option<String>,
@@ -51,7 +18,6 @@ pub struct Connection {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ClientModbusConfig {
     pub protocol_type: String,
-    // #[serde(flatten)]
     pub connection: Connection,
 }
 
@@ -78,8 +44,8 @@ pub fn load_configuration(path_to_config: &str) -> Vec<ClientModbusConfig> {
 }
 
 pub fn parse_to_json_format() -> Vec<String> {
-    let configs =
-        load_configuration("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
+    let path = String::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
+    let configs = load_configuration(&path);
 
     let mut vec_configs: Vec<String> = Vec::new();
     for config in configs {
@@ -88,3 +54,13 @@ pub fn parse_to_json_format() -> Vec<String> {
     }
     vec_configs
 }
+
+// pub struct ClientConfig {
+//     pub vec_configs: Vec<ClientModbusConfigs>,
+// }
+
+// impl ClientConfig {
+//     pub fn check_protocol_type(&self) {
+//         let a = self.vec_configs
+//     }
+// }
