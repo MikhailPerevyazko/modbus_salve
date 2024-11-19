@@ -2,6 +2,7 @@ mod config;
 mod connect;
 
 use config::{json_connection_config, load_configs};
+use connect::conneting;
 use rmodbus_client::ModBusClient;
 fn main() {
     let vec_json_config = json_connection_config();
@@ -14,7 +15,7 @@ fn main() {
     vec_client.push(client_tcp);
     vec_client.push(client_udp);
     vec_client.push(client_rtu);
-    connect::test(vec_client, vec_json_config);
+    conneting(vec_client, vec_json_config);
 
     let vec_parameters =
         load_configs("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
