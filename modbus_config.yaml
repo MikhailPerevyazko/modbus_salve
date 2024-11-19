@@ -18,8 +18,66 @@ connection_configs:
       parity: "none"
       stop_bits: 1
 parameters:
-  - name: "coils"
+  - name: "door1"
     unit_id: 1
     ptype: "bool"
     start_address: 0
     mstorage: "DI"
+  - name: "door2"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 1
+    mstorage: "DI"
+  - name: "door3"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 8
+    mstorage: "DI"
+
+  - name: "switch1"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 0
+    mstorage: "DO"
+  - name: "switch2"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 1
+    mstorage: "DO"
+  - name: "switch3"
+    unit_id: 1
+    ptype: "bool"
+    start_address: 9
+    mstorage: "DO"
+
+  - name: "temp1"
+    unit_id: 1
+    ptype: "float"
+    start_address: 0
+    mstorage: "AI"
+  - name: "temp2"
+    unit_id: 1
+    ptype: "float"
+    start_address: 2
+    mstorage: "AI"
+  - name: "temp3"
+    unit_id: 1
+    ptype: "float"
+    start_address: 5
+    mstorage: "AI"
+
+  - name: "speed1"
+    unit_id: 1
+    ptype: "float"
+    start_address: 0
+    mstorage: "AO"
+  - name: "speed2"
+    unit_id: 1
+    ptype: "float"
+    start_address: 3
+    mstorage: "AO"
+  - name: "speed3"
+    unit_id: 1
+    ptype: "float"
+    start_address: 5
+    mstorage: "AO"

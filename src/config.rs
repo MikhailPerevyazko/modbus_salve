@@ -36,16 +36,16 @@ pub struct ClientModbusConfigs {
     pub parameters: Vec<FunctionParameter>,
 }
 
-pub fn load_configuration(path_to_config: &str) -> Vec<ClientModbusConfig> {
+pub fn load_connections_config(path_to_config: &str) -> Vec<ClientModbusConfig> {
     let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
     let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
     let vec_client_modbus_config = configs.connection_configs;
     vec_client_modbus_config
 }
 
-pub fn parse_to_json_format() -> Vec<String> {
+pub fn json_connection_config() -> Vec<String> {
     let path = String::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
-    let configs = load_configuration(&path);
+    let configs = load_connections_config(&path);
 
     let mut vec_configs: Vec<String> = Vec::new();
     for config in configs {
@@ -55,12 +55,28 @@ pub fn parse_to_json_format() -> Vec<String> {
     vec_configs
 }
 
-// pub struct ClientConfig {
-//     pub vec_configs: Vec<ClientModbusConfigs>,
-// }
+pub fn load_parameters_config(path_to_config: &str) -> Vec<FunctionParameter> {
+    let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
+    let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
+    let vec_client_modbus_config = configs.parameters;
+    vec_client_modbus_config
+}
 
-// impl ClientConfig {
-//     pub fn check_protocol_type(&self) {
-//         let a = self.vec_configs
-//     }
-// }
+pub fn json_parameters_config() -> Vec<String> {
+    let path = String::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
+    let configs = load_parameters_config(&path);
+
+    let mut vec_configs: Vec<String> = Vec::new();
+    for config in configs {
+        let parsed_config = serde_json::to_string(&config).unwrap();
+        vec_configs.push(parsed_config.clone());
+    }
+    vec_configs
+}
+
+pub fn load_configs(path_to_config: &str) -> Vec<FunctionParameter> {
+    let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
+    let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
+    let parameters = configs.parameters;
+    parameters
+}
