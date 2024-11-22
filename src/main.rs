@@ -28,13 +28,10 @@ fn main() {
                 sleep(Duration::from_millis(1));
             }
             let answer = client_tcp.last_responses_str();
-            println!("Answer coils status: {:?}", answer);
+            println!("Answer coils status: {:?}", answer.unwrap());
         }
         sleep(Duration::from_secs(1));
-        break;
-    }
 
-    loop {
         for task in vec_di {
             if let Err(err) = client_tcp.push_back_task_from_str(&task) {
                 println!("Ошибка отправки запроса: {:?}", err);
@@ -44,13 +41,10 @@ fn main() {
                 sleep(Duration::from_millis(1));
             }
             let answer = client_tcp.last_responses_str();
-            println!("Answer input status: {:?}", answer);
+            println!("Answer input status: {:?}", answer.unwrap());
         }
         sleep(Duration::from_secs(1));
-        break;
-    }
 
-    loop {
         for task in vec_ao {
             if let Err(err) = client_tcp.push_back_task_from_str(&task) {
                 println!("Ошибка отправки запроса: {:?}", err);
@@ -60,13 +54,10 @@ fn main() {
                 sleep(Duration::from_millis(1));
             }
             let answer = client_tcp.last_responses_str();
-            println!("Answer holding registers status: {:?}", answer);
+            println!("Answer holding registers status: {:?}", answer.unwrap());
         }
         sleep(Duration::from_secs(1));
-        break;
-    }
 
-    loop {
         for task in vec_ai {
             if let Err(err) = client_tcp.push_back_task_from_str(&task) {
                 println!("Ошибка отправки запроса: {:?}", err);
@@ -76,9 +67,10 @@ fn main() {
                 sleep(Duration::from_millis(1));
             }
             let answer = client_tcp.last_responses_str();
-            println!("Answer input register status: {:?}", answer);
+            println!("Answer input register status: {:?}", answer.unwrap());
         }
         sleep(Duration::from_secs(1));
+
         break;
     }
 }

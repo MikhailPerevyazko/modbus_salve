@@ -119,7 +119,7 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     }
 
     let mut vec_fn_do: Vec<String> = Vec::new();
-    let mut id: i32 = 1;
+    let id: i32 = 1;
     for parameters in do_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
             "bool" => 1,
@@ -132,11 +132,10 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
             id, parameters.unit_id, parameters.start_address, count
         );
         vec_fn_do.push(read_coil_status);
-        id += 1;
     }
 
     let mut vec_fn_di: Vec<String> = Vec::new();
-    let mut id: i32 = 1;
+
     for parameters in di_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
             "bool" => 1,
@@ -144,7 +143,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
             _ => 1,
         };
 
-        id += 1;
         let read_input_status = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadInputStatus","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -153,7 +151,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     }
 
     let mut vec_fn_ao: Vec<String> = Vec::new();
-    let mut id: i32 = 1;
     for parameters in ao_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
             "bool" => 1,
@@ -161,7 +158,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
             _ => 1,
         };
 
-        id += 1;
         let read_holding_registers: String = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadHoldingRegisters","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -170,7 +166,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     }
 
     let mut vec_fn_ai: Vec<String> = Vec::new();
-    let mut id: i32 = 1;
     for parameters in ai_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
             "bool" => 1,
@@ -178,7 +173,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
             _ => 1,
         };
 
-        id += 1;
         let read_holding_registers: String = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadInputRegisters","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -193,5 +187,6 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     vec_func_tasks.push(vec_fn_ai);
 
     println!("{:#?}", vec_func_tasks);
+
     vec_func_tasks
 }

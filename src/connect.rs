@@ -11,7 +11,7 @@ pub fn conneting(client: &ModBusClient, vec_connection_config: Vec<String>) {
             }
         };
         while !client.is_connected() {
-            println!("Соединение не установлено. ");
+            println!("Соединение не установлено... ");
             sleep(Duration::from_millis(100));
         }
         println!("Подключено.");
