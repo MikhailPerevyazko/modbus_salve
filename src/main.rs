@@ -1,22 +1,84 @@
 mod config;
 mod connect;
 
-use config::{json_connection_config, print_parameters_json};
+use std::{thread::sleep, time::Duration};
+
+use config::{get_parameters_from_config, json_connection_config};
 use connect::conneting;
 use rmodbus_client::ModBusClient;
 
 fn main() {
-    let vec_json_config = json_connection_config();
-
+    let connection_config = json_connection_config();
     let client_tcp = ModBusClient::new();
-    let client_udp = ModBusClient::new();
-    let client_rtu = ModBusClient::new();
-    let mut vec_client: Vec<ModBusClient> = Vec::new();
+    conneting(&client_tcp, connection_config);
 
-    vec_client.push(client_tcp);
-    vec_client.push(client_udp);
-    vec_client.push(client_rtu);
-    conneting(vec_client, vec_json_config);
+    let vec_tasks = get_parameters_from_config();
+    let vec_do = vec_tasks.get(0).unwrap();
+    let vec_di = vec_tasks.get(1).unwrap();
+    let vec_ao = vec_tasks.get(2).unwrap();
+    let vec_ai = vec_tasks.get(3).unwrap();
 
-    print!("{:#?}", print_parameters_json());
+    loop {
+        for task in vec_do {
+            if let Err(err) = client_tcp.push_back_task_from_str(&task) {
+                println!("Ошибка отправки запроса: {:?}", err);
+                continue;
+            }
+            while !client_tcp.have_got_responses() {
+                sleep(Duration::from_millis(1));
+            }
+            let answer = client_tcp.last_responses_str();
+            println!("Answer coils status: {:?}", answer);
+        }
+        sleep(Duration::from_secs(1));
+        break;
+    }
+
+    loop {
+        for task in vec_di {
+            if let Err(err) = client_tcp.push_back_task_from_str(&task) {
+                println!("Ошибка отправки запроса: {:?}", err);
+                continue;
+            }
+            while !client_tcp.have_got_responses() {
+                sleep(Duration::from_millis(1));
+            }
+            let answer = client_tcp.last_responses_str();
+            println!("Answer input status: {:?}", answer);
+        }
+        sleep(Duration::from_secs(1));
+        break;
+    }
+
+    loop {
+        for task in vec_ao {
+            if let Err(err) = client_tcp.push_back_task_from_str(&task) {
+                println!("Ошибка отправки запроса: {:?}", err);
+                continue;
+            }
+            while !client_tcp.have_got_responses() {
+                sleep(Duration::from_millis(1));
+            }
+            let answer = client_tcp.last_responses_str();
+            println!("Answer holding registers status: {:?}", answer);
+        }
+        sleep(Duration::from_secs(1));
+        break;
+    }
+
+    loop {
+        for task in vec_ai {
+            if let Err(err) = client_tcp.push_back_task_from_str(&task) {
+                println!("Ошибка отправки запроса: {:?}", err);
+                continue;
+            }
+            while !client_tcp.have_got_responses() {
+                sleep(Duration::from_millis(1));
+            }
+            let answer = client_tcp.last_responses_str();
+            println!("Answer input register status: {:?}", answer);
+        }
+        sleep(Duration::from_secs(1));
+        break;
+    }
 }

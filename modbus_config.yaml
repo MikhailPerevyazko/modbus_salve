@@ -3,37 +3,21 @@ connection_configs:
     connection:
       host: "127.0.0.1"
       port: "5500"
-  - protocol_type: "udp"
-    connection:
-      host: "127.0.0.1"
-      port: "5001"
-      listen_host: "127.0.0.1"
-      listen_port: "5002"
-  - protocol_type: "rtu"
-    connection:
-      name: "/dev/ttyUSB1"
-      baud_rate: 115200
-      data_bits: 8
-      flow_control: "none"
-      parity: "none"
-      stop_bits: 1
+  # - protocol_type: "udp"
+  #   connection:
+  #     host: "127.0.0.1"
+  #     port: "5001"
+  #     listen_host: "127.0.0.1"
+  #     listen_port: "5002"
+  # - protocol_type: "rtu"
+  #   connection:
+  #     name: "/dev/ttyUSB1"
+  #     baud_rate: 115200
+  #     data_bits: 8
+  #     flow_control: "none"
+  #     parity: "none"
+  #     stop_bits: 1
 parameters:
-  - name: "door1"
-    unit_id: 1
-    ptype: "bool"
-    start_address: 0
-    mstorage: "DI"
-  - name: "door2"
-    unit_id: 1
-    ptype: "bool"
-    start_address: 1
-    mstorage: "DI"
-  - name: "door3"
-    unit_id: 1
-    ptype: "bool"
-    start_address: 8
-    mstorage: "DI"
-
   - name: "switch1"
     unit_id: 1
     ptype: "bool"
@@ -50,21 +34,21 @@ parameters:
     start_address: 9
     mstorage: "DO"
 
-  - name: "temp1"
+  - name: "door1"
     unit_id: 1
-    ptype: "float"
+    ptype: "bool"
     start_address: 0
-    mstorage: "AI"
-  - name: "temp2"
+    mstorage: "DI"
+  - name: "door2"
     unit_id: 1
-    ptype: "float"
-    start_address: 2
-    mstorage: "AI"
-  - name: "temp3"
+    ptype: "bool"
+    start_address: 1
+    mstorage: "DI"
+  - name: "door3"
     unit_id: 1
-    ptype: "float"
-    start_address: 5
-    mstorage: "AI"
+    ptype: "bool"
+    start_address: 8
+    mstorage: "DI"
 
   - name: "speed1"
     unit_id: 1
@@ -81,3 +65,19 @@ parameters:
     ptype: "float"
     start_address: 5
     mstorage: "AO"
+
+  - name: "temp1"
+    unit_id: 1
+    ptype: "float"
+    start_address: 0
+    mstorage: "AI"
+  - name: "temp2"
+    unit_id: 1
+    ptype: "float"
+    start_address: 2
+    mstorage: "AI"
+  - name: "temp3"
+    unit_id: 1
+    ptype: "float"
+    start_address: 5
+    mstorage: "AI"
