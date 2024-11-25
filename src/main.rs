@@ -14,6 +14,7 @@ fn main() {
     conneting(&client_tcp, connection_config);
     // Получить вектор задач
     let vec_tasks = get_parameters_from_config();
+
     // Основной цикл
     loop {
         println!("{:#?}", vec_tasks);
