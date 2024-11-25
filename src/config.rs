@@ -5,14 +5,14 @@ use std::fs;
 pub struct Connection {
     pub host: Option<String>,
     pub port: Option<String>,
-    pub listen_host: Option<String>,
-    pub listen_port: Option<String>,
-    pub name: Option<String>,
-    pub baud_rate: Option<i32>,
-    pub data_bits: Option<i32>,
-    pub flow_control: Option<String>,
-    pub parity: Option<String>,
-    pub stop_bits: Option<i32>,
+    // pub listen_host: Option<String>,
+    // pub listen_port: Option<String>,
+    // pub name: Option<String>,
+    // pub baud_rate: Option<i32>,
+    // pub data_bits: Option<i32>,
+    // pub flow_control: Option<String>,
+    // pub parity: Option<String>,
+    // pub stop_bits: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -40,7 +40,8 @@ pub fn load_connections_config(path_to_config: &str) -> Vec<ClientModbusConfig> 
     let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
     let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
     let vec_client_modbus_config = configs.connection_configs;
-    vec_client_modbus_config
+
+    return vec_client_modbus_config;
 }
 
 pub fn json_connection_config() -> Vec<String> {
@@ -52,14 +53,16 @@ pub fn json_connection_config() -> Vec<String> {
         let parsed_config = serde_json::to_string(&config).unwrap();
         vec_configs.push(parsed_config.clone());
     }
-    vec_configs
+
+    return vec_configs;
 }
 
 pub fn load_configs(path_to_config: &str) -> Vec<FunctionParameter> {
     let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
     let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
     let parameters = configs.parameters;
-    parameters
+
+    return parameters;
 }
 
 pub fn get_parameters_from_config() -> Vec<Vec<String>> {
@@ -118,15 +121,21 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
         json_vec_ai.push(parsed_params.clone());
     }
 
+    //? ID функции
+    let mut id: i32 = 1;
+    //?Count константы
+    const COUNT_BOOL: i32 = 1;
+    const COUNT_FLOAT: i32 = 2;
+
     let mut vec_fn_do: Vec<String> = Vec::new();
-    let id: i32 = 1;
     for parameters in do_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
-            "bool" => 1,
-            "float" => 2,
+            "bool" => COUNT_BOOL,
+            "float" => COUNT_FLOAT,
             _ => 1,
         };
 
+        id += 1;
         let read_coil_status: String = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadCoilStatus","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -135,14 +144,14 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     }
 
     let mut vec_fn_di: Vec<String> = Vec::new();
-
     for parameters in di_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
-            "bool" => 1,
-            "float" => 2,
+            "bool" => COUNT_BOOL,
+            "float" => COUNT_FLOAT,
             _ => 1,
         };
 
+        id += 1;
         let read_input_status = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadInputStatus","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -153,11 +162,12 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     let mut vec_fn_ao: Vec<String> = Vec::new();
     for parameters in ao_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
-            "bool" => 1,
-            "float" => 2,
+            "bool" => COUNT_BOOL,
+            "float" => COUNT_FLOAT,
             _ => 1,
         };
 
+        id += 1;
         let read_holding_registers: String = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadHoldingRegisters","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -168,11 +178,12 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     let mut vec_fn_ai: Vec<String> = Vec::new();
     for parameters in ai_vec {
         let count = match &parameters.ptype.to_lowercase()[..] {
-            "bool" => 1,
-            "float" => 2,
+            "bool" => COUNT_BOOL,
+            "float" => COUNT_FLOAT,
             _ => 1,
         };
 
+        id += 1;
         let read_holding_registers: String = format!(
             r#"{{"id":{},"unit":{},"operation":"ReadInputRegisters","address":{},"count":{}}}"#,
             id, parameters.unit_id, parameters.start_address, count
@@ -186,7 +197,5 @@ pub fn get_parameters_from_config() -> Vec<Vec<String>> {
     vec_func_tasks.push(vec_fn_ao);
     vec_func_tasks.push(vec_fn_ai);
 
-    println!("{:#?}", vec_func_tasks);
-
-    vec_func_tasks
+    return vec_func_tasks;
 }
