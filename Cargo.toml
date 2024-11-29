@@ -2,7 +2,6 @@
 name = "modbus_tcp"
 version = "0.1.0"
 edition = "2021"
-# log = "0.4.22"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -13,4 +12,3 @@ serde_yaml = "0.9.34"
 rmodbus_client={ git = "http://programmers.ont.cheaz.ru:3000/ONT.soft/rmodbus_client.git" }
 log4rs = "1.3.0"
 log = "0.4.22"
-# rmodbus = { version = "*"}
