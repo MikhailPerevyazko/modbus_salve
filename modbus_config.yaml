@@ -96,3 +96,9 @@ parameters:
     start_address: 5
     mstorage: "AI"
     channel_id: 1
+  - name: "temp4"
+    unit_id: 1
+    ptype: "float"
+    start_address: 6
+    mstorage: "AI"
+    channel_id: 1

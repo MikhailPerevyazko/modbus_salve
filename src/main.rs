@@ -42,9 +42,13 @@ pub fn call_modbus() {
     conneting(&client_udp, vec_configs_udp);
     // conneting(&client_rtu, vec_configs_rtu);
 
-    // Получить вектор задач
+    // Вывести в терминале все таски
     let vec_tasks = get_all_tasks();
-    println!(" all task: {:#?}", vec_tasks);
+    for tasks in vec_tasks.iter() {
+        for task in tasks {
+            println!("{:#?}", task)
+        }
+    }
 
     // Основной цикл
     loop {
