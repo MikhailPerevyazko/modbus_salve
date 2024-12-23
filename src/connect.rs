@@ -10,11 +10,13 @@ pub fn conneting(client: &ModBusClient, vec_connection_config: Vec<String>) {
                 return;
             }
         };
+
         while !client.is_connected() {
             println!("Соединение не установлено... ");
             sleep(Duration::from_millis(100));
         }
+
         println!("Подключено.");
-        println!("Конфигурация соединения:\n{:#?}\n", config);
+        println!("Конфигурация соединения: {:#?}\n", config);
     }
 }

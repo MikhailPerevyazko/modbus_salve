@@ -119,7 +119,6 @@ pub fn change_start_addr_count(params_store: &Vec<FunctionParameter>) -> Vec<(i3
             first_element = addrs_vec[i];
         }
     }
-
     result.push((first_element, count));
 
     return result;

@@ -45,54 +45,54 @@ parameters:
     ptype: "bool"
     start_address: 0
     mstorage: "DI"
-    channel_id: 0
+    channel_id: 1
   - name: "door2"
     unit_id: 1
     ptype: "bool"
     start_address: 1
     mstorage: "DI"
-    channel_id: 0
+    channel_id: 1
   - name: "door3"
     unit_id: 1
     ptype: "bool"
     start_address: 7
     mstorage: "DI"
-    channel_id: 0
+    channel_id: 1
 
   - name: "speed1"
     unit_id: 1
     ptype: "float"
     start_address: 0
     mstorage: "AO"
-    channel_id: 0
+    channel_id: 1
   - name: "speed2"
     unit_id: 1
     ptype: "float"
     start_address: 1
     mstorage: "AO"
-    channel_id: 0
+    channel_id: 1
   - name: "speed3"
     unit_id: 1
     ptype: "float"
     start_address: 4
     mstorage: "AO"
-    channel_id: 0
+    channel_id: 1
 
   - name: "temp1"
     unit_id: 1
     ptype: "float"
     start_address: 0
     mstorage: "AI"
-    channel_id: 0
+    channel_id: 1
   - name: "temp2"
     unit_id: 1
     ptype: "float"
     start_address: 1
     mstorage: "AI"
-    channel_id: 0
+    channel_id: 1
   - name: "temp3"
     unit_id: 1
     ptype: "float"
     start_address: 5
     mstorage: "AI"
-    channel_id: 0
+    channel_id: 1
