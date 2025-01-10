@@ -1,10 +1,11 @@
 mod config;
 mod connect;
 
-use config::get_all_tasks;
-use config::json_connection_config;
+use config::{get_all_tasks, json_connection_config};
 use connect::conneting;
 use rmodbus_client::ModBusClient;
+use serde_json::Value;
+use std::error::Error;
 use std::{thread::sleep, time::Duration};
 
 fn main() {
@@ -12,7 +13,7 @@ fn main() {
 }
 
 pub fn call_modbus() {
-    //? Получить вектор настроек для соединения
+    // Получить вектор настроек для соединения
     let connection_config = json_connection_config();
 
     let mut vec_configs_tcp: Vec<String> = Vec::new();
@@ -66,9 +67,57 @@ pub fn call_modbus() {
 
                 let answer = client_tcp.last_response_str().unwrap();
                 println!("Ответ: {:#?}", answer);
+
+                match reverse_data(answer) {
+                    Ok(numbers) => {
+                        // Variant 1
+                        let convert_to_hex: Vec<String> = numbers
+                            .iter()
+                            .map(|&value| format!("{:X}", value))
+                            .collect();
+
+                        for v in convert_to_hex {
+                            println!("{:?}", v)
+                        }
+
+                        // Variant 2
+                        for num in numbers {
+                            let bytes_num = num.to_be_bytes();
+                            println!("{:?}", bytes_num);
+                        }
+                    }
+                    Err(err) => println!("Error: {}", err),
+                }
             }
             sleep(Duration::from_millis(200));
         }
         break;
     }
 }
+
+pub fn reverse_data(answer: String) -> Result<Vec<i32>, Box<dyn Error>> {
+    let input = answer.as_str();
+    let value: Value = serde_json::from_str(input).unwrap();
+
+    // Проверяем, что в data находится массив
+    if let Some(data_array) = value.get("data").and_then(|d| d.as_array()) {
+        let mut numbers: Vec<i32> = data_array
+            .iter()
+            .filter_map(|v| v.as_i64())
+            .map(|n| n as i32) // Преобразуем в i32
+            .collect();
+        numbers.reverse();
+        Ok(numbers)
+    } else {
+        Err("Ошибка: 'data' не является массивом".into())
+    }
+}
+
+// pub fn convert_to_hex(revers_data: Vec<i32>) -> Vec<String> {
+//     let convert_string_vec = revers_data
+//         .iter()
+//         .map(|&value| format!("{:X}", value)) // Конвертируем в шестнадцатеричную строку
+//         .collect();
+
+//     return convert_string_vec;
+// }
