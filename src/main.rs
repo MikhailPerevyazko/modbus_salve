@@ -4,12 +4,18 @@ mod connect;
 use config::{get_all_tasks, json_connection_config};
 use connect::conneting;
 use rmodbus_client::ModBusClient;
+use serde_json::json;
 use serde_json::Value;
 use std::error::Error;
 use std::{thread::sleep, time::Duration};
 
 fn main() {
     call_modbus();
+
+    // let answer_test = String::from("{\"id\":9,\"status\":\"Ok\",\"data\":[95,96,97]}");
+    // let hex_data_test: Vec<[u8; 4]> = Vec::from([[0, 0, 0, 97], [0, 0, 0, 96], [0, 0, 0, 95]]);
+    // let new_answer_test = to_hex_response(hex_data_test, answer_test);
+    // println!("Ответ на тест: \n {}", new_answer_test);
 }
 
 pub fn call_modbus() {
@@ -66,30 +72,31 @@ pub fn call_modbus() {
                 }
 
                 let answer = client_tcp.last_response_str().unwrap();
+                let double_answer = answer.clone();
                 println!("Ответ: {:#?}", answer);
 
-                match reverse_data(answer) {
-                    Ok(numbers) => {
-                        // Variant 1
-                        let convert_to_hex: Vec<String> = numbers
-                            .iter()
-                            .map(|&value| format!("{:X}", value))
-                            .collect();
+                let rev_data_vec = reverse_data(answer).unwrap();
 
-                        for v in convert_to_hex {
-                            println!("{:?}", v)
-                        }
+                //? Variant 1.
+                // let hex_data: Vec<String> = rev_data_vec
+                //     .iter()
+                //     .map(|&value| format!("{:X}", value))
+                //     .collect();
 
-                        // Variant 2
-                        for num in numbers {
-                            let bytes_num = num.to_be_bytes();
-                            println!("{:?}", bytes_num);
-                        }
-                    }
-                    Err(err) => println!("Error: {}", err),
+                // println!("{:?}", hex_data);
+
+                //? Variant 2.
+                let mut bytes_data: Vec<[u8; 4]> = Vec::new();
+                for val in rev_data_vec {
+                    let bytes_val = val.to_be_bytes();
+                    bytes_data.push(bytes_val);
                 }
+                println!("{:?}", bytes_data);
+
+                let new_answer = to_hex_response(bytes_data.clone(), &double_answer);
+                println!("Новый ответ: {}", new_answer);
             }
-            sleep(Duration::from_millis(200));
+            sleep(Duration::from_millis(100));
         }
         break;
     }
@@ -104,20 +111,34 @@ pub fn reverse_data(answer: String) -> Result<Vec<i32>, Box<dyn Error>> {
         let mut numbers: Vec<i32> = data_array
             .iter()
             .filter_map(|v| v.as_i64())
-            .map(|n| n as i32) // Преобразуем в i32
+            .map(|n| n as i32) //? Преобразуем в i32
             .collect();
         numbers.reverse();
+
         Ok(numbers)
     } else {
         Err("Ошибка: 'data' не является массивом".into())
     }
 }
 
-// pub fn convert_to_hex(revers_data: Vec<i32>) -> Vec<String> {
-//     let convert_string_vec = revers_data
-//         .iter()
-//         .map(|&value| format!("{:X}", value)) // Конвертируем в шестнадцатеричную строку
-//         .collect();
+pub fn to_hex_response(bytes_data: Vec<[u8; 4]>, answer: &str) -> String {
+    answer.to_string();
+    let mut parsed: Value = serde_json::from_str(&answer).unwrap();
 
-//     return convert_string_vec;
-// }
+    let hex_data: Vec<String> = bytes_data
+        .into_iter()
+        .map(|byte_array| {
+            byte_array
+                .iter()
+                .map(|&byte| format!("{:X}", byte))
+                .collect::<String>()
+        })
+        .collect();
+
+    if let Some(data_field) = parsed.as_object_mut().and_then(|obj| obj.get_mut("data")) {
+        *data_field = json!(hex_data);
+    }
+    let new_answer = serde_json::to_string(&parsed).unwrap();
+
+    return new_answer;
+}
