@@ -11,11 +11,6 @@ use std::{thread::sleep, time::Duration};
 
 fn main() {
     call_modbus();
-
-    // let answer_test = String::from("{\"id\":9,\"status\":\"Ok\",\"data\":[95,96,97]}");
-    // let hex_data_test: Vec<[u8; 4]> = Vec::from([[0, 0, 0, 97], [0, 0, 0, 96], [0, 0, 0, 95]]);
-    // let new_answer_test = to_hex_response(hex_data_test, answer_test);
-    // println!("Ответ на тест: \n {}", new_answer_test);
 }
 
 pub fn call_modbus() {
@@ -91,7 +86,6 @@ pub fn call_modbus() {
                     let bytes_val = val.to_be_bytes();
                     bytes_data.push(bytes_val);
                 }
-                println!("{:?}", bytes_data);
 
                 let new_answer = to_hex_response(bytes_data.clone(), &double_answer);
                 println!("Новый ответ: {}", new_answer);
@@ -117,7 +111,7 @@ pub fn reverse_data(answer: String) -> Result<Vec<i32>, Box<dyn Error>> {
 
         Ok(numbers)
     } else {
-        Err("Ошибка: 'data' не является массивом".into())
+        Err("Ошибка: В response 'data' не является массивом".into())
     }
 }
 
