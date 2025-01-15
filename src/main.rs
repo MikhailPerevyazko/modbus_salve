@@ -96,7 +96,7 @@ pub fn reverse_data_in_response(answer: String) -> Result<Vec<i32>, Box<dyn Erro
     }
 }
 
-pub fn to_hex_data_in_response(bytes_data: Vec<[u8; 4]>, answer: &str) -> String {
+pub fn make_new_response_with_hex_data(bytes_data: Vec<[u8; 4]>, answer: &str) -> String {
     answer.to_string();
     let mut parsed: Value = serde_json::from_str(&answer).unwrap();
 
@@ -105,7 +105,7 @@ pub fn to_hex_data_in_response(bytes_data: Vec<[u8; 4]>, answer: &str) -> String
         .map(|byte_array| {
             byte_array
                 .iter()
-                .map(|&byte| format!("{:X}", byte))
+                .map(|&byte| format!("{}", byte))
                 .collect::<String>()
         })
         .collect();
@@ -113,7 +113,6 @@ pub fn to_hex_data_in_response(bytes_data: Vec<[u8; 4]>, answer: &str) -> String
     if let Some(data_field) = parsed.as_object_mut().and_then(|obj| obj.get_mut("data")) {
         *data_field = json!(hex_data);
     }
-
     let new_answer = serde_json::to_string(&parsed).unwrap();
 
     return new_answer;
@@ -121,7 +120,7 @@ pub fn to_hex_data_in_response(bytes_data: Vec<[u8; 4]>, answer: &str) -> String
 
 pub fn print_response(answer: String) {
     let double_answer = answer.clone();
-    println!("Ответ: {:#?}", answer);
+    println!("Ответ: {}", answer);
 
     let reverse_data_vec = reverse_data_in_response(answer).unwrap();
 
@@ -131,6 +130,6 @@ pub fn print_response(answer: String) {
         bytes_data.push(bytes_val);
     }
 
-    let new_answer = to_hex_data_in_response(bytes_data.clone(), &double_answer);
-    println!("Новый ответ: {:?}", new_answer);
+    let new_answer = make_new_response_with_hex_data(bytes_data.clone(), &double_answer);
+    println!("Новый ответ: {}", new_answer);
 }
