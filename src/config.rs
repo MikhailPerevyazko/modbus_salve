@@ -137,7 +137,7 @@ pub fn get_all_tasks() -> Vec<Vec<String>> {
     let new_ao_param = change_start_addr_count(ao_params_store);
     let new_ai_param = change_start_addr_count(ai_params_store);
 
-    let mut id = 1;
+    let mut id = 0;
 
     let do_unit_id = do_params_store[0].unit_id;
     let mut do_tasks_vec: Vec<String> = Vec::new();

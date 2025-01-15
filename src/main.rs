@@ -45,10 +45,12 @@ pub fn call_modbus() {
     // conneting(&client_rtu, vec_configs_rtu);
 
     // Вывести в терминале все таски
+    let mut num_task = 0;
     let vec_tasks = get_all_tasks();
     for tasks in vec_tasks.iter() {
         for task in tasks {
-            println!("Task: {:#?}", task)
+            num_task += 1;
+            println!("Task #{}: {:#?}", num_task, task)
         }
     }
 
