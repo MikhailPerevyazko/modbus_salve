@@ -86,7 +86,8 @@ pub fn reverse_data_in_response(answer: String) -> Result<Vec<i32>, Box<dyn Erro
         let mut numbers: Vec<i32> = data_array
             .iter()
             .filter_map(|v| v.as_i64())
-            .map(|n| n as i32) // Преобразуем в i32
+            // Преобразуем в i32
+            .map(|n| n as i32)
             .collect();
         numbers.reverse();
 
@@ -96,10 +97,10 @@ pub fn reverse_data_in_response(answer: String) -> Result<Vec<i32>, Box<dyn Erro
     }
 }
 
+//? Функция некорректно работает(возвращает неверный формат response)
 pub fn make_new_response_with_hex_data(bytes_data: Vec<[u8; 4]>, answer: &str) -> String {
     answer.to_string();
     let mut parsed: Value = serde_json::from_str(&answer).unwrap();
-
     let hex_data: Vec<String> = bytes_data
         .into_iter()
         .map(|byte_array| {
@@ -121,15 +122,12 @@ pub fn make_new_response_with_hex_data(bytes_data: Vec<[u8; 4]>, answer: &str) -
 pub fn print_response(answer: String) {
     let double_answer = answer.clone();
     println!("Ответ: {}", answer);
-
     let reverse_data_vec = reverse_data_in_response(answer).unwrap();
-
     let mut bytes_data: Vec<[u8; 4]> = Vec::new();
     for v in reverse_data_vec {
         let bytes_val = v.to_be_bytes();
         bytes_data.push(bytes_val);
     }
-
     let new_answer = make_new_response_with_hex_data(bytes_data.clone(), &double_answer);
     println!("Новый ответ: {}", new_answer);
 }

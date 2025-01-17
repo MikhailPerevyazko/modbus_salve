@@ -41,12 +41,14 @@ pub fn load_connections_config(path_to_config: &str) -> Vec<ConnectionModbusConf
     let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
     let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
     let vec_client_modbus_config = configs.connection_configs;
+
     return vec_client_modbus_config;
 }
 
 pub fn json_connection_config() -> Vec<ConnectionModbusConfig> {
-    let path = String::from("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
+    let path = String::from("/home/Mikhail/projects/modbus_tcp/modbus_config.yaml");
     let configs = load_connections_config(&path);
+
     return configs;
 }
 
@@ -54,12 +56,12 @@ pub fn load_param_configs(path_to_config: &str) -> Vec<FunctionParameter> {
     let configuration = fs::read_to_string(path_to_config.to_string()).unwrap();
     let configs: ClientModbusConfigs = serde_yaml::from_str(&configuration.as_str()).unwrap();
     let parameters = configs.parameters;
+
     return parameters;
 }
 
 pub fn sort_fn_params() -> Vec<Vec<FunctionParameter>> {
-    let vec_fn_params =
-        load_param_configs("/home/Mikhail/projects/try_to_modbus/modbus_tcp/modbus_config.yaml");
+    let vec_fn_params = load_param_configs("/home/Mikhail/projects/modbus_tcp/modbus_config.yaml");
 
     let mut vec_do_fn_params: Vec<FunctionParameter> = Vec::new();
     let mut vec_di_fn_params: Vec<FunctionParameter> = Vec::new();
